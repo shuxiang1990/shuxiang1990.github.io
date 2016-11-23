@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[Hexo 母版的备份和还原]]></title>
+      <url>http://yoursite.com/2016/11/24/Hexo-%E6%AF%8D%E7%89%88%E7%9A%84%E5%A4%87%E4%BB%BD%E5%92%8C%E8%BF%98%E5%8E%9F/</url>
+      <content type="html"><![CDATA[<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>Hexo 的大致原理就是把你写的 Markdown 文件翻译成 Html 文件，最后连同你设置的主题等静态文件一起生成一个网站代码上传到 Github 上，并且 Hexo 的工作目录并不是网站代码目录。简单来说，由 Hexo 生成了一个网站镜像，要想改变网站内容，就得从 Hexo 源头改起，也就是 Hexo 的工作目录。</p>
+<p>然而当你想在两台或者以上的电脑上修改网站内容时你必须得有 Hexo 母版的一份拷贝，因此备份 Hexo 母版显得比较重要。以下记录了备份和还原的方法，参考了网上的一些方法。以下的一些操作都假设你已经有了 github 的账号，并且已经配好了公钥。</p>
+<h4 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h4><p>第一次安装使用 Hexo 时会创建一个工作目录，在这个目录下你可以用 <code>hexo new &quot;article&quot;</code> 来创建一个 MD 文件，然后在这个文件里面编辑，完成后 <code>hexo generate</code> 生成 html 文件以及 <code>hexo deploy</code> 将增加的静态文件 push 到 github。要备份这个目录，你可以在 github 上新建一个项目 hexo（下文都用 hexo 代替新建的项目），clone 下来，然后将 Hexo 的工作目录下的所有文件拷贝过去，再新建一个 <code>.gitignore</code> 文件（如果没有的话），里面加上以下两项。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">.deploy*   （这个目录是 hexo g 时生成的）</div><div class="line">node_modules/    （这个是 npm install 的时候生成的）</div></pre></td></tr></table></figure>
+<p>最后 <code>git add --all</code>，<code>git commit -m &quot;xxxxx&quot;</code>，<code>git push</code> 提交。</p>
+<p>每次更改内容时，先 <code>hexo g</code>，<code>hexo d</code> 将修改推上去，再 <code>git push</code> 来备份。</p>
+<h4 id="还原"><a href="#还原" class="headerlink" title="还原"></a>还原</h4><p>如果本机上的 Hexo 工作目录由于意外原因被删了，或者需要在另外一台电脑上编辑内容，就可以利用之前的备份进行还原了。先 <code>git clone hexo项目</code> ，进入 hexo 目录执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">npm install --no-bin-links</div><div class="line">npm install hexo-deployer-git</div></pre></td></tr></table></figure>
+<p>然后就可以正常进行博客的编辑和上传操作了。</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Xtrabackup 线上使用过程中遇到的一些问题2]]></title>
+      <url>http://yoursite.com/2016/08/15/Xtrabackup-%E7%BA%BF%E4%B8%8A%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%982/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>在线上使用过程中遇到了好几个备份失败的问题，其中一个场景紧接着之前的一篇文章 “Xtrabackup 线上使用过程中遇到的一些问题”，先 Mark 下，明天再记录。</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[MySQL binlog group commit]]></title>
+      <url>http://yoursite.com/2016/08/15/MySQL-binlog-group-commit/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>深夜看文章忽然想到 MySQL 的组提交问题，于是网上查了查资料，感觉一下清楚了许多。关于 Group Commit 的背景、存在的问题以及原因如下链接已经说得比较详细了，里面有三个页面： <a href="http://kristiannielsen.livejournal.com/12254.html" title="gp" target="_blank" rel="external">http://kristiannielsen.livejournal.com/12254.html</a></p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>针对以上问题 mariadb 首先提出了解决方案，接着 percona 也用了同样的方案。 MySQL 也在 5.6 的时候用了类似的方案并做了改进。 而淘宝又在 MySQL 的基础上提出了优化方案，具体可参考如下文章，里面也有介绍 MySQL 的组提交方案的连接： <a href="http://mysql.taobao.org/index.php?title=MySQL%E5%86%85%E6%A0%B8%E6%9C%88%E6%8A%A5_2015.01" title="gp2" target="_blank" rel="external">http://mysql.taobao.org/index.php?title=MySQL%E5%86%85%E6%A0%B8%E6%9C%88%E6%8A%A5_2015.01</a></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Xtrabackup 线上使用过程中遇到的一些问题]]></title>
+      <url>http://yoursite.com/2016/06/30/Xtrabackup-%E7%BA%BF%E4%B8%8A%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近线上使用 Xtrabackup 做热备份的时候遇到一个非常奇怪的问题： 线上在从库上进行热备的时候，从库的 SQL 线程堵在了 <code>waiting for global read lock</code> 上，时间最长的堵了 7 小时。当时的报错打印日志如下：</p>
+<p>晚上 8：09 分开始加全局读锁准备拷贝非 InnoDB 文件，正常情况下后面不会再有拷贝 idb 文件的情况，但是却发生了。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup1.png" alt="1"></p>
+<p>用了 20 秒的时间把所有的非 InnoDB 表备份走了，但没有释放全局读锁。其实 20 秒的时间影响也比较大了，在主库上备份更需要慎重考虑。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup2.png" alt="2"></p>
+<p>两个小时后结束了，并释放了全局读锁。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup3.png" alt="3"></p>
+<p>这种情况有悖于该工具所描述的 “不影响线上服务” 的宗旨。于是决定去看下到底是什么原因。</p>
+<h3 id="线上的一些状况"><a href="#线上的一些状况" class="headerlink" title="线上的一些状况"></a>线上的一些状况</h3><p>在描述之前补充下线上的一些环境</p>
+<ul>
+<li>Xtrabackup 版本是 2.2.12</li>
+<li>MySQL 版本是 5.5，tmpdir 都用的 tmpfs</li>
+<li>备份方式是 xtrabackup + tar + 压缩 + hdfs 全量备份</li>
+<li>出现备份问题的都是用的上面的备份方式</li>
+<li>出现备份问题的机器上使用流式备份的端口至少 2 个</li>
+</ul>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>先整理了下线上的一些环境和问题的共性，接着开始排查。该工具自去年开始就上线使用了，一直没有出现过类似的问题，直到新版备份系统上线后问题开始出现。基于这个原因，我把新版备份系统使用 innobackupex 的方式给找了出来，手动执行了两遍（当时备份的原实例所在的机器上没有端口在备份）并没有重现上述问题。排除了具有共性的 bug 的原因，怀疑是哪里使用方式不对。于是和老版备份的使用方式做了比较，不同的地方有两处：一是新版设置了 parallel = 3，老版的是 1（后来看代码发现在用 tar 做流式备份的时候，parallel 会被置成 1，因此排除了这个因素）；二是新版没有加 –tmpdir 参数，即使用的是 MySQL 配置文件中的 tmpdir。当时怀疑的 tmpfs 和流式备份配合备份可能会有问题，但网上查了一番后无果。不甘心去看了代码，整理了下拷贝 idb 文件、非 innodb 文件和加全局读锁的顺序</p>
+<ul>
+<li>xtrabackup 创建 xtrabackup_suspended_1, innobackupex 删除该文件，该文件和增量备份逻辑有关</li>
+<li>xtrabackup 创建 xtrabackup_suspended_2, 表示跟 innodb 相关的文件都已拷贝完成并阻塞，这时候 innobackupex 检测到该文件存在则往里面写入 xtrabackup 的 pid，接着进行下一步的 FTWRL 操作，进而开始拷贝 non-innodb 文件</li>
+<li>拷贝完 non-innodb 文件，并记录 binlog 信息后就简单的将文件删除（unlink），xtrabackup 检测到该文件被删除后就继续开始拷贝增量日志信息，而 innobackupex 则继续等待 xtrabackup_log_copied 文件的创建</li>
+<li>xtrabackup 拷贝完所有增量日志后（LSN 不再变化）会创建 xtrabackup_log_copied ，innobackupex 检测到增量日志拷贝完后先将 xtrabackup_log_copied 删除，然后释放全局读锁，接着有需要的话 start slave sql_thread，最后等待 xtrabackup 进程结束</li>
+<li>xtrabackup 检测到 xtrabackup_log_copied 被删除后自己释放资源并结束，innobackupex 发现子进程结束后再接着做其它后续工作</li>
+</ul>
+<p>innobackupex 脚本在调用 xtrabackup 进行流式备份的时候会将 xtrabackup_logfile 和 xtrabackup_suspended 文件创建在 tmpdir 目录中（否则会将 suspended 文件拷贝至备份目录，因为一般备份目录不同端口都不同，所以不会有问题），xtrabackup_logfile 文件会等日志拷贝完成后再传到远程，而 xtrabackup_suspended 文件则是中间生成的 innobackupex 和 xtrabackup 两个程序互相通信的简便方式：通过创建和删除文件来进行同步。</p>
+<p>从报错日志可以看出，在拷贝完 innodb 文件之前，应该是有别的进程创建了 suspended 文件，导致出现问题，正好同一机器上的备份端口不止一个，并且创建的 suspended 文件都在同一目录下，如果两个端口同时开始备份，数据量小的端口先创建了 suspended 文件，那么另一个数据量大的端口就会出现开头所描述的问题。经测试后重现。</p>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><ul>
+<li>加上 tmpdir 参数，指定不同的目录</li>
+<li>xtrabackup 创建的文件名需要改下，innobackupex 脚本也得改下，使得每个备份进程创建的中间文件名都不一样</li>
+<li>直接上 xtrabackup 2.4</li>
+</ul>
+<p>文件名的组装方式可以改下，比如加上 xtrabackup 进程的 id</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup5.png" alt="1"><br><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup7.png" alt="3"><br><img src="http://7xsphq.com1.z0.glb.clouddn.com/xtrabackup6.png" alt="2"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>该问题出现需要满足的三个条件</p>
+<ul>
+<li>同一机器上有至少 2 个端口在备份</li>
+<li>使用流式备份</li>
+<li>suspended 中间文件的创建路径相同</li>
+</ul>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[ MySQL InnoDB 的 Double Write]]></title>
+      <url>http://yoursite.com/2016/06/26/MySQL-InnoDB-%E7%9A%84-Double-Write/</url>
+      <content type="html"><![CDATA[<p>参考： <a href="http://blog.itpub.net/22664653/viewspace-1140915/" target="_blank" rel="external">原文</a></p>
+<h3 id="背景：-partial-page-write-问题"><a href="#背景：-partial-page-write-问题" class="headerlink" title="背景： partial page write 问题"></a>背景： partial page write 问题</h3><p>InnoDB 的 Page Size 一般是 16KB，其数据校验也是针对这 16KB 来计算的，将数据写入到磁盘是以 Page 为单位进行操作的。而计算机硬件和操作系统，在极端情况下（比如断电）往往并不能保证这一操作的原子性，16K 的数据，写入 4K 时，发生了系统断电 / os crash ，只有一部分写是成功的，这种情况下就是 partial page write 问题。</p>
+<p>很多 DBA 会想到系统恢复后，MySQL 可以根据 redolog 进行恢复，而 mysql 在恢复的过程中是检查 page 的 checksum，checksum 就是 page 的最后事务号，发生 partial page write 问题时，page 已经损坏，找不到该 page 中的事务号，就无法恢复。</p>
+<h3 id="double-write-是什么？"><a href="#double-write-是什么？" class="headerlink" title="double write 是什么？"></a>double write 是什么？</h3><p>Double write 是 InnoDB 在 tablespace 上的 128 个页（2个区）是 2MB，起原理为：</p>
+<p>为了解决 partial page write 问题 ，当 mysql 将脏数据 flush 到 data file 的时候, 先使用 memcopy 将脏数据复制到内存中的 double write buffer ，之后通过 double write buffer 再分 2 次，每次写入 1MB 到共享表空间，然后马上调用 fsync 函数，同步到磁盘上，避免缓冲带来的问题，在这个过程中，double write 是顺序写，开销并不大，在完成 double write 写入后，在将 double write buffer写入各表空间文件，这时是离散写入。<strong>（补充： double write 是在刷脏的时候先写的，fsync 完 double write 后再 fsync data file。 如果操作都没问题，double write 可以被后面的数据覆盖，因此不存在 double write 空间不够的情况。）</strong></p>
+<p>如果发生了极端情况（断电），InnoDB 再次启动后，发现了一个 Page 数据已经损坏，那么此时就可以从 double write 中进行数据恢复了。<strong>（盗图，图可能有问题，个人理解第 5 步应该为： flush redo logfile 到磁盘； 第 6 步应该为： copy dirty page 到 DWB， 再 write 到 tablespace，再 flush； 第 7 步应该为： flush data page 到磁盘； 第 8 步应该为： 从 tablespace 中恢复坏块）</strong></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/double-write.jpg" alt="1"></p>
+<h3 id="double-write-的缺点是什么？"><a href="#double-write-的缺点是什么？" class="headerlink" title="double write 的缺点是什么？"></a>double write 的缺点是什么？</h3><p>位于共享表空间上的 double write buffer 实际上也是一个文件，写 DWB 会导致系统有更多的 fsync 操作, 而硬盘的 fsync 性能, 所以它会降低 mysql 的整体性能. 但是并不会降低到原来的 50%. 这主要是因为:<br>1) double write 是一个连续的存储空间, 所以硬盘在写数据的时候是顺序写, 而不是随机写, 这样性能更高.<br>2) 将数据从 double write buffer 写到真正的 segment 中的时候, 系统会自动合并连接空间刷新的方式, 每次可以刷新多个 pages;</p>
+<h3 id="double-write-在恢复的时候是如何工作的？"><a href="#double-write-在恢复的时候是如何工作的？" class="headerlink" title="double write 在恢复的时候是如何工作的？"></a>double write 在恢复的时候是如何工作的？</h3><ul>
+<li>If there’s a partial page write to the doublewrite buffer itself, the original page will still be on disk in its real location.<br>如果是写 double write buffer 本身失败，那么这些数据不会被写到磁盘，InnoDB 此时会从磁盘载入原始的数据，然后通过 InnoDB 的事务日志来计算出正确的数据，重新写入到 double write buffer.</li>
+<li>When InnoDB recovers, it will use the original page instead of the corrupted copy in the doublewrite buffer. However, if the doublewrite buffer succeeds and the write to the page’s real location fails, InnoDB will use the copy in the doublewrite buffer during recovery.<br>如果 double write buffer 写成功，但是写磁盘失败，InnoDB就不用通过事务日志来计算了，而是直接用 DWB 的数据再写一遍.</li>
+<li>InnoDB knows when a page is corrupt because each page has a checksum at the end; the checksum is the last thing to be written, so if the page’s contents don’t match the checksum, the page is corrupt. Upon recovery, therefore, InnoDB just reads each page in the doublewrite buffer and verifies the checksums. If a page’s checksum is incorrect, it reads the page from its original location.<br>在恢复的时候，InnoDB 直接比较页面的 checksum，如果不对的话，就从硬盘载入原始数据，再由事务日志开始推演出正确的数据，所以 InnoDB 的恢复通常需要较长的时间.<strong>（补充： 能直接从事务日志和原数据推导出来，那 DWB 还有什么用，是在 page 写坏连 page no 都找不到这才是问题吧？）</strong></li>
+</ul>
+<h3 id="我们是否一定需要-double-write？"><a href="#我们是否一定需要-double-write？" class="headerlink" title="我们是否一定需要 double write？"></a>我们是否一定需要 double write？</h3><p>In some cases, the doublewrite buffer really isn’t necessary—for example, you might want to disable it on slaves. Also, some filesystems (such as ZFS) do the same thing themselves, so it is redundant for InnoDB to do it. You can disable the doublewrite buffer by setting InnoDB_doublewrite to 0.</p>
+<h3 id="如何使用-double-write？"><a href="#如何使用-double-write？" class="headerlink" title="如何使用 double write？"></a>如何使用 double write？</h3><p>InnoDB_doublewrite = 1表示启动 double write<br>show status like ‘InnoDB_dblwr%’ 可以查询 double write 的使用情况;<br>相关参数与状态<br>Double write的使用情况：<br>show status like  “%InnoDB_dblwr%”;  </p>
+<p>InnoDB_dblwr_pages_written 从bp flush 到 DBWB的个数<br>InnoDB_dblwr_writes            写文件的次数<br>每次写操作合并 page 的个数 = InnoDB_dblwr_pages_written / InnoDB_dblwr_writes </p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[慢查堆积引起导致从库不可用]]></title>
+      <url>http://yoursite.com/2016/06/21/%E7%BA%BF%E4%B8%8A%E6%85%A2%E6%9F%A5%E5%A0%86%E7%A7%AF%E5%BC%95%E8%B5%B7%E7%9A%84%E4%BB%8E%E5%BA%93%E4%B8%8D%E5%8F%AF%E7%94%A8/</url>
+      <content type="html"><![CDATA[<h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p>收到线上的报警，提示某个端口的某几个从库存活检测超时或者连接失败。凭经验，猜测应该是慢查造成的（如果是机器挂了，应该都是报连接失败，而且 MySQL 服务器千兆网卡很少会存在网络带宽打满的问题）。于是登上机器查看负载情况（由于机器负载较高，卡在了登录过程中，先布了 kill 之后才能上去。因为 CPU 基本上都忙于处理 SQL 语句，影响其他比如 ssh 服务的连接处理。），看到如下状况:</p>
+<p>CPU 基本占满（8 核机器），而且 us 部分占了 80% 多，wa 占了 10%，这基本可以判断 SQL 的问题在于排序或者其它计算</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-%E8%B4%9F%E8%BD%BD.png" alt=""></p>
+<p>进一步看机器的状态，内存基本用完，磁盘利用率飙升（其实 swap 也用完了，总共 7G）</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-%E5%86%85%E5%AD%98.jpg" alt=""></p>
+<h3 id="进一步分析"><a href="#进一步分析" class="headerlink" title="进一步分析"></a>进一步分析</h3><ul>
+<li><p>造成此问题的具体 SQL 是什么？有什么问题？</p>
+<p> 其实这个可以从之前布的 kill 程序的返回结果看到，然而慢日志和 show processlist 能提供更详细的信息。</p>
+<p> 查看执行语句状态，Copying to tmp table 表示正往临时表拷贝数据</p>
+<p> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-SQL.png" alt=""></p>
+<p> 分析 SQL 的执行计划，联表查询只用到了其中一个表的索引。 另外一个表进行了全表扫。 预估要对 35 万行数据进行排序筛选。</p>
+<p> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%921.png" alt=""></p>
+<p> 再看表结构定义，一个是 InnoDB 表，联表字段是 NOT NULL； 一个是 Myisam 表，联表字段是 default NULL。两张表结构没有截全。（联表字段结构必须一样么？）</p>
+<p> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-myisam1.png" alt=""><br> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-myisam2.png" alt=""></p>
+<p> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-Innodb1.png" alt="i1"><br> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-innodb2.png" alt="i2"></p>
+<p> 再看慢日志的结果，引擎层实际扫描了 48 万行数据送到服务器，结果只取了其中 11 行，问题就在这里了，按照 &lt;&lt;高性能 MySQL&gt;&gt; 的说法就是 select 访问数据多于实际想要的数据，具体慢查询如何优化，优化思路请看”慢查询优化步骤”。</p>
+<p> <img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%85%A2%E6%9F%A5%E8%AF%A2-%E6%97%A5%E5%BF%97.png" alt=""></p>
+</li>
+<li><p>为什么内存、swap 都用光了，连 buffer、cache 都被用光了？</p>
+<ul>
+<li>该端口的几个从库连接数维持在 100/s 的水平。</li>
+<li><p>每来一个连接，服务器为其开一个线程，并且该线程使用到了 sort_buffer, join_buffer, myisam_sort_buffer, tmp_table, 这些加起来有 280 M 左右。</p>
+<p>280MB * 100 / 1024 = 27GB， 加上 innodb_buffer_pool 8 G，基本上能达到第一张图该进程的占用水平。<br>临时表 + 排序 + swap 造成了 CPU + io 达到极限，以至于慢查询堆积，直至机器卡死。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决"></a>如何解决</h3><ul>
+<li>优化 SQL。思路就是借助索引尽量少扫数据。目前还在配合开发优化中。</li>
+<li>调整参数。鉴于几个从库都是 SSD 的机器，那么正常情况下多些 IO 也无所谓，思想就是用 IO 换内存空间。把线程 buffer 都调小，io_capacity 参数适当调大。</li>
+</ul>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[记一次库级别的拆分]]></title>
+      <url>http://yoursite.com/2016/06/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%BA%93%E7%BA%A7%E5%88%AB%E7%9A%84%E6%8B%86%E5%88%86/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>线上有个手机微博 LBS 的端口，每秒1600左右的写入，从库经常延迟。经观察后发现大部分写入操作都集中在更新某个 DB 上，该 DB 容量也有将近 400G，占了整个端口的 70%，并且容量还处于上涨的趋势。大量的 update 导致从库追不上，对于日常备份、扩容都是问题。（如果表结构以及 update 语句使用不当，update 造成的资源消耗将会非常多，可参考何登成的 MySQL 源码分析视频）</p>
+<h3 id="需要解决的问题"><a href="#需要解决的问题" class="headerlink" title="需要解决的问题"></a>需要解决的问题</h3><ul>
+<li>容量问题</li>
+<li>延迟问题</li>
+<li>备份问题</li>
+</ul>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>和开发商量后决定对该 DB 进行拆分，思路是一拆多，分摊主库写的压力，同时也能分散主库容量压力，也有利于备份。具体如下</p>
+<p>库名 wifi 下有 256 张表是主要的更新对象，考虑到对写入量和资源分配的折中，决定将 256 张表拆分到 4 个不同的新端口。</p>
+<p>最终1端口保留如下表</p>
+<p>wifi_00.ibd ~ wifi_3f.ibd</p>
+<p>最终2端口保留如下表</p>
+<p>wifi_40.ibd ~ wifi_7f.ibd</p>
+<p>最终3端口保留如下表</p>
+<p>wifi_80.ibd ~ wifi_bf.ibd</p>
+<p>最终4端口保留如下表</p>
+<p>wifi_c0.ibd ~ wifi_ff.ibd</p>
+<p><strong>具体拆分步骤如下</strong>：</p>
+<p>一、基于已有的从库或备份扩容出从库 s1，修改配置文件（和其它从库一样连到主库，配置过滤条件，只复制需要的 DB）<br>replicate_wild_do_table = wifi.%</p>
+<p>replicate_wild_do_table = mysql.%</p>
+<p>replicate_wild_do_table = 其它内部使用的库</p>
+<p>二、在扩出的从库 s1 上删除其它不需要复制过滤的 DB，例如：</p>
+<p>drop database ip<br>drop database cell</p>
+<p>三、没问题后停 s1，拷贝三份数据 s2，s3，s4 至其他机器，修改 server-id，buffer pool，端口号后启动复制。<br>1)stop s1<br>2)rsync to 其它三台机器<br>3)在每台机器上：改数据目录权限，改配置文件以及里面的端口信息<br>4)start ALL_PORT<br>5)观察一段时间</p>
+<p>四、前三步没问题后基于 s1，s2，s3，s4 扩容出相应的从库，修改从库的配置，重新 change master。通知业务切换对 wifi 库的写读。<br>1)四个端口分别 stop 实例，rsync 数据到相应的从库，传完后按序启动源实例，分别记录下 master position，启动前将 log-slave-update 改为 1<br>2)分别到相应的从库修改如下配置：<br>server-id、删除 replicate_wild_do_table 参数、开启复制<br>3)change master to 步骤1）记录下的点位<br>4)观察一段时间，如没问题通知业务修改代码逻辑。先开放读，切换时再开放写</p>
+<p>五、drop tables。<br>1)观察一段时间，等业务已经将读写分离后，再将各自端口不需要的表 rename，每个端口保留 wifi 库中表的 1/4 即可，端口之间不能删重了。期间可抓包、或者查看数据文件的最后修改时间或者跟业务确认，来确定是否 rename。<br>2)继续观察一段时间，跟业务确认保证读写已完全分离后再 drop 掉 rename 后的表。<br>3)确定源端口主库已没有 wifi 库的读写后，将新端口的主库 stop slave。新端口稳定后，可以将源端口的 wifi 库删除。</p>
+<p>六、指定备份策略等其他善后工作。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1、拆分之前要做好拆分计划，以及计划的具体实施步骤，落实到每一步，该注意什么，免得操作的过程配置出差错，延缓整体拆分时间。</p>
+<p>2、拆之前要找几台好机器，免得延迟大了，时间拖得久。</p>
+<p>3、传数据的时候以一传一的方式，比如A传B，B再传C，这样A传完就可以启动服务，可能会节省整个过程的时间。</p>
+<p>4、在迁移读写策略前，需要先停原主库的数据写入，等新端口的数据都应用完后再切换读写逻辑。</p>
+<p>5、读写切换后，需要观察数据文件是否按照预期进行更新。</p>
+<p>6、拆分过程帮助开发解决了一个遗留的历史问题。<strong>256 张表里面其中有张表竟然少一个字段</strong>，但开发一直没察觉。</p>
+<p>7、拆分后写入量降为 300-400，一段时间后业务量增长，每个新端口又恢复到了 1000 左右的写。</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[记一次 SQL 注入故障]]></title>
+      <url>http://yoursite.com/2016/06/05/%E8%AE%B0%E4%B8%80%E6%AC%A1-SQL-%E6%B3%A8%E5%85%A5%E6%95%85%E9%9A%9C/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>作为一个 DBA ，平时工作中多少会碰到开发误删数据的情况，这时候 DBA 就该出手了，翻翻陈年笔记，一般都能解决，让开发满意。 但有些时候照搬经验也会出问题，笔者一月前就碰到一次跟数据恢复相关的问题，然而这次没处理好。</p>
+<h3 id="事件起因"><a href="#事件起因" class="headerlink" title="事件起因"></a>事件起因</h3><p>一天早上某博客业务 feed 库忽然报从库全部延迟，于是上去看了下，发现从库的复制线程正在执行一个看似比较复杂的 update 语句，第一反应是 update 行数多（大事务）造成的从库延迟。 但是出于职业的敏感性，又把这个 SQL 贴到了 sublime 中，于是发现了下图的问题。 接着马上上主库看，然而主库早已执行完了，于是开始了漫长的数据恢复过程。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E5%8D%9A%E5%AE%A2%E6%B3%A8%E5%85%A5%E7%9A%84SQL.png" alt="boke"></p>
+<h3 id="恢复过程"><a href="#恢复过程" class="headerlink" title="恢复过程"></a>恢复过程</h3><p>出现这样的问题，我们当然第一时间得通知开发，然而开发来了之后也不知道是怎么回事，没法弄清楚 SQL 的具体执行时间以及完整的 SQL（这有别与以往的开发误删的问题），没法确定 SQL 注入的开始时间，为保险起见只能在所有 binlog 中匹配 update（当时主库的 binlog 有将近 20 个，总大小为 20G 左右。 后面想了一个办法，另起一个空实例，开启 sql-safe-update ，再将 binlog 往里灌，如果报错则说明该条语句有问题，再对结果进行筛选）。 关于如何恢复写花的表，我们的想法就是先把最近的备份拉出来，然后把涉及的表的数据 dump 出来，再灌进主库，这也是我们之前处理数据恢复的一贯做法。 但是当开始做的时候就发现各种问题了，然而还是一条道走到黑了。</p>
+<p>1、备份存在 hdfs 上。需要从 hdfs 上拉数据，压缩后的数据是 70G 左右，以 30 M 的速度边拉边解压大概花了一小时左右（如果当时先拉数据后解压，时间可能会短些）</p>
+<p>2、表太大。拉过来数据解压后数据总共 360G 左右，而其中涉及的表就有 360G。 当时做了个错误的决定，直接分别把表结构和数据 dump 出来了，基本上用的默认的参数（mysqldump 的参数还得好好研究一下）。dump 数据的时候比较慢，大概花了 1-2 小时。dump 完后数据有 140G。</p>
+<p>3、往回灌遇到的问题。 往回灌的时候直接把线上写花的表给 rename 成 bak 了，（因为业务要求写不能停，当时如果导进去的时候先把表名改成另外的名字，再导进去，导完后再 rename ，影响的时间几乎很小了）造成的问题是，服务还在写的，写被阻塞；同时从库由于同步，表也会被 rename，造成从从库上读不到数据（读不出来数据造成了投诉增多）。于是当时的一个紧急解决方案是将拉出来的备份当从库，停复制，将原来的从库下线。 回灌的过程非常漫长，大概用了 4-5 个小时。</p>
+<p>由于开发还要求将从备份结束的点开始，到开始回灌数据的这段时间内（回灌的时候已经阻塞了写表操作，因此对该表的更新都阻塞了，不影响 binlog 分析）的有效数据找出来，在回灌数据期间，我们开始分析 binlog。</p>
+<p>1、首先是找到备份结束的点位，然后是回灌开始的点位</p>
+<p>2、再分析这段时间内的 binlog，找到 insert、update、delete 语句，由于开发只要求不少数据，最后给他把 insert 语句找出来了</p>
+<p>3、同时又分析了 update 和 delete 语句，delete 语句都正常，只有 update 语句中出现有部分注入的现象，由于注入部分出现在富文本中，很难肉眼观察，于是想了个办法新起了一个实例，开启 sql-safe-update 参数，将 update 应用在测试实例上进行测试，最后从报错中找出了 2 条注入语句</p>
+<p>4、回灌结束后再把所有找到的 insert 语句往里导</p>
+<p>三、恢复方案思考（是否有更好的方案）</p>
+<p>整个过程持续了 10 小时左右，第一次碰到这个事情，无论在沟通上还是在处理上都反映了不足。首先没有和开发协商好处理方案，其次是数据恢复方案有问题，太低效</p>
+<p>1、数据量大不推荐直接 dump 出来再 dump 回去，可以把拉出来的备份当做主库先提供线上用，再到老主库上去清理数据，这样能减少好几个小时的故障时间</p>
+<p>2、dump 回去的时候不能 rename 原表，因为主从还必须提供着服务，虽然数据花了。应该新建另外一个表，再 dump 进去。</p>
+<p>四、总结</p>
+<p>1、遇到故障时自己首先保持冷静，否则有可能造成二次故障</p>
+<p>2、和开发商量好应急方案</p>
+<p>3、处理问题有时候不能照搬以前的处理模式，需要随机应变</p>
+<p>最后提供下造成本次故障的直接推手，某人的博客名，同时也吐槽下开发，存这数据竟然没转译。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%9F%90%E5%8D%9A%E4%B8%BB.png" alt="2"></p>
+<p>博主地址在这： <a href="http://blog.sina.com.cn/s/blog_641343bc0102vajb.html" target="_blank" rel="external">http://blog.sina.com.cn/s/blog_641343bc0102vajb.html</a></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[MySQL 慢日志解析推送]]></title>
+      <url>http://yoursite.com/2016/05/30/MySQL-%E6%85%A2%E6%97%A5%E5%BF%97%E8%A7%A3%E6%9E%90%E6%8E%A8%E9%80%81/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>之前有用 pt-query-digest 做的慢日志分析的方案，定期将所有机器的慢日志的收集起来，传到中心机上用 pt-query-digest 分析一遍，最后展示出来。 </p>
+<ul>
+<li><p>基于 pt 分析展示的结果比较详细，有 SQL 排行，占比等，但是用户体验不是特别好，不能一目了然。</p>
+</li>
+<li><p>该功能本来是可以给开发看的，但是很少有开发会去看，每次有慢查询需要和开发配合进行修改或者调整的时候，开发都会问我们要具体的 SQL，比较麻烦。 </p>
+</li>
+<li><p>因为每个人维护的端口实例数比较多，并且每次监控报出来的跟慢日志有关的往往是比较严重的问题，像隐式转化这种，如果对实例影响不是很严重，平时也发现不了。 </p>
+</li>
+</ul>
+<p>基于以上原因，借助 ELK ，搞了个慢日志实时分析的方案，并且在 kibana 上配好一些图表后即可交给开发看，每次有新 SQL 上线后可以根据慢日志信息的实时展示及时发现问题。</p>
+<h3 id="方案确定"><a href="#方案确定" class="headerlink" title="方案确定"></a>方案确定</h3><p>首先在网上搜了下关于慢日志分析展示的方案，除了用 pt 工具外，还有用 logstash 进行正则匹配的，正好那会日志分析处理比较热门，ELK 就是其中之一，并且部门其他同事已经搭建好了 ELK 服务，也正好可以用起来。</p>
+<h3 id="搭建"><a href="#搭建" class="headerlink" title="搭建"></a>搭建</h3><ul>
+<li>下载 logstash-all-plugins-2.1.0。好处是不用自己装插件了，直接能用</li>
+<li>写好配置文件。 logstash 启动的时候会按照配置文件中的设置和规则进行解析和过滤</li>
+<li>nohup bin/logstash -f xxx.cnf &gt; /dev/null 2&gt;&amp;1 &amp; 即可在后台运行</li>
+<li>可以写个简单的监控来查看 logstash 进程是否存活，以及重启</li>
+</ul>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>主要是 MySQL 慢日志的解析正则，参考了网上的，但没有一个是能正确匹配的，只好自己再加工了。 里面有些字段可以不要，有些匹配失败的还可以过滤掉，并不是很完善，但是能用。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">input &#123;</div><div class="line">  file &#123; </div><div class="line">    path =&gt; &quot;/data1/mysql*/slow.log&quot;</div><div class="line">    type =&gt; &quot;slow-log&quot;</div><div class="line">    codec =&gt; multiline &#123;</div><div class="line">      pattern =&gt; &quot;^# User@Host:&quot;</div><div class="line">      negate =&gt; true</div><div class="line">      what =&gt; previous</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">filter &#123;</div><div class="line"> </div><div class="line">  grok &#123;</div><div class="line">    match =&gt; &#123; &quot;message&quot; =&gt; &quot;# User@Host: (?&lt;user&gt;[a-zA-Z0-9._-]*)\[(?:.*)\]\s+@\s+(?&lt;client-domain&gt;\S*)\s+\[%&#123;IP:client-ip&#125;*\]\s.*# Query_time: %&#123;NUMBER:query_time:float&#125;\s+Lock_time: %&#123;NUMBER:lock_time:float&#125;\s+Rows_sent: %&#123;NUMBER:rows_sent:int&#125;\s+Rows_examined: %&#123;NUMBER:rows_examined:int&#125;\s.*(?&lt;db&gt;use \S*)?.*SET timestamp=%&#123;NUMBER:ts&#125;;\s+(?&lt;query&gt;(?&lt;action&gt;\w+)\s+.*)\s+#?\s*.*&quot; &#125;</div><div class="line">  &#125;</div><div class="line">  grok &#123;</div><div class="line">    match =&gt; &#123; &quot;path&quot; =&gt; &quot;/data1/mysql%&#123;NUMBER:port:int&#125;/slow.log&quot; &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">output &#123;</div><div class="line"></div><div class="line">  elasticsearch &#123;</div><div class="line">    hosts =&gt; [&quot;x.x.x.x&quot;]</div><div class="line">    index =&gt; &quot;%&#123;type&#125;-%&#123;+YYYY.MM.dd&#125;&quot;</div><div class="line">    document_type =&gt; &quot;%&#123;type&#125;&quot;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>目前线上部署了 150-200 台机器的 logstash，每台机器跑 3-4 个 MySQL 实例，总共 450-800 个 MySQL 实例。 大部分实例没有慢查（小于 1s 的），小部分有的也很明显，能直观的从 kibana 界面中看出来。 如图，还解决了好几个隐式转换的问题。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/ELK%E8%B5%B0%E5%8A%BF%E4%B8%AD%E5%8F%91%E7%8E%B0update%E7%9A%84%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2.jpg" alt="1"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/ELKupdate%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2.jpg" alt="2"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/logstash-%E8%A1%A8%E7%BB%93%E6%9E%84.png" alt="3"></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Memcached 文本协议]]></title>
+      <url>http://yoursite.com/2016/05/29/Memcached-%E6%96%87%E6%9C%AC%E5%8D%8F%E8%AE%AE/</url>
+      <content type="html"><![CDATA[<p>Memcached客户端通过TCP协议与服务器通信（也可通过UDP接口；详细信息在下面的UDP协议中会涉及）。一个运行的memcached服务器在某个可配置的端口上监听，客户端链接那个端口，给服务器发送命令，读取返回信息，关闭连接。</p>
+<p>客户端没有必要发送一个命令来关闭这个会话，它可以在任何不需要的时候关闭连接。然而，需要注意的是，客户端最好缓存连接而不是每次它们需要存储或获取数据时重新打开连接。这是因为memcached是为高效管理大量（几百，甚至超过一千）连接而特别设计的。缓存连接可以消除建立一个TCP连接（在服务器端准备一个新的连接的开销和这里比起来变得微不足道）所需的开销。</p>
+<p>Memcached有两种数据传输协议：文本行和无结构数据。文本行用于客户端向服务器发送的命令和服务端的返回。当一个客户端需要存储或者获取数据时发送无结构数据。服务端会以字节流的形式返回和接收时同样的无结构数据。服务端不在乎无结构数据的字节序并且也不知道。无结构数据中可能出现的字符没有截止标记。但是，读这数据的客户端或者服务器必须从前面的文本行中知道数据准确的传输长度。</p>
+<p>文本行由\r\n终止。无结构数据也一样，即使在数据中出现了\r, \n或者其他的8位字符。因此，当一个客户端从服务端获取数据时，它必须使用数据块的长度（需提供）来决定数据在什么地方结束。而不是用\r\n作为数据块的结束，虽然这也是。</p>
+<p>键</p>
+<p>Memcached中存储的数据借助键来区分。一个键是一个文本字符串，它唯一标志了一个数据，提供给客户端进行存储和获取。当前的键长为250个字符（当然，通常客户端不需要这么长的键）。键必须不能包括控制字符或者空格。</p>
+<p>命令</p>
+<p>有三种类型的命令</p>
+<p>存储命令（有六个：“set”，“add”，“replace”，“append”，“prepend”和“cas”）要求服务器存储由键标识的数据。客户端发送一个命令行，跟着一个数据块，然后客户端希望接收一个返回行，表明是成功或者失败。</p>
+<p>检索命令（有两个：“get”和“gets”）要求服务器根据键（一个请求中有一个或多个键）来返回相应的数据。客户端发送一个包含了所有的请求键的命令行，接着服务器根据每一个找到的item，发送一个包含了item信息的返回行和一个包含了item数据的数据块给客户端。继续这样的操作直到服务器以“END”返回行结束查询。</p>
+<p>所有其他的命令不涉及无结构数据。在所有的命令里，客户端发送一个命令行，并希望（根据命令的不同）返回一个返回行或者多个返回行并在最后一行中以“END”结束。</p>
+<p>一个命令行通常以命令的名字开始，后接由空格隔开的参数（如果有的话）。命令的名字是小写的并且大小写敏感。</p>
+<p>超时时间</p>
+<p>一些命令包含了客户端发送给服务器的某些类型的超时时间（跟客户端的某个item或操作相关）。在所有这样的例子里，发送的实际的值可以是Unix时间（自1970年1月以来的秒数，32位值）或者是从当前时间开始的秒数。在后一个情况中，秒数的值不超过606024*30（30天里的秒数），如果客户端发送的数值大于上述情况，服务器会将其当作实际的Unix时间而不是从当前时间开始的秒数。</p>
+<p>错误字串</p>
+<p>客户端发送的每个命令有可能会收到服务端返回的错误字符串，分为三类： “ERROR\r\n” 意思是客户端发送了一个不存在的命令 “CLIENT_ERROR<error>\r\n” 意思是在输入行中的某些客户端错误，也即输入不符合协议规范。<error>是一个人可读的错误字符串。 “SERVER_ERROR<error>\r\n” 意思是服务器端的错误，阻止了服务器执行命令。<error>是一个人可读的错误字符串。在某些严重的服务器错误里，服务器无法继续为客户端提供服务（通常不回发生），服务器会在发送错误行后关闭连接。这是服务器关闭连接的唯一一种情况。</error></error></error></error></p>
+<p>在下面的每个命令的描述中，那些错误行不会具体的提到，但是客户端必须允许错误的存在。</p>
+<p>存储命令</p>
+<p>首先，客户端发送一个命令行，看起来像这样：</p>
+<p><command name=""> <key> <flags> <exptime> <bytes>[noreply]\r\n cas <key> <flags> <exptime> <bytes> <cas unique=""> [noreply]\r\n</cas></bytes></exptime></flags></key></bytes></exptime></flags></key></p>
+<p><command name="">是”set”, “add”, “replace”, “append” 或 “prepend” “set”表示存储数据 “add”表示存储数据，只有在服务器没有当前数据的时候 “replace”表示存储数据，只有在服务器已有当前数据的时候 “append”表示加入数据到一个已存在的键的已存在数据的后面 “prepend”表示加入数据到已存在的键的已存在数据的前面</p>
+<p>Append和prepend命令不接受flags或者exptime。它们更新已存在数据部分并且忽略新的flag和exptime设置。</p>
+<p>“cas”是一个check and set操作，意思是“存储数据，但是只有从我上次fetch过后没有其他人更新的情况下才做”</p>
+<p><key>表示要存的键 <flags>是一个随机的16位无符号整型（以十进制表示），服务器把这个整型和数据一起存储，并且随查询的item一起返回给客户端。客户端可以把它当成16个位域来存储跟数据有关的信息。这些域对服务器是不透明的。需要注意的是在memcached1.2.1以及更高版本，flags可能是32位而不是16位，但是你可以使用16位来使得和以前的版本兼容。</flags></key></p>
+<p><exptime>是超时时间。如果它是0，item不会超时（虽然有可能从cache中被删除来为其它item腾出空间）。如果它是非空的（Unix时间或者是当前时间以后的秒数），这样保证了客户端不能进行查询item直到到达超时时间（由服务器计算）。</exptime></p>
+<p><bytes>是数据块的字节数，不包括\r\n。可以为0（意味着接下来跟着一个空的数据块）。</bytes></p>
+<p><cas unique="">是一个已存在的entry的唯一64位值。客户端应该利用“gets”的返回值来进行“cas”的更新操作。</cas></p>
+<p>“noreply”可选参数告诉服务器不要发送返回信息。注意：如果请求行是畸形的，服务器就不能可靠的解析“noreply”选项。这种情况下服务器将会返回一个错误，客户端如果如果不处理就会产生问题。客户端应该创建有效的请求。</p>
+<p>该行下面，客户端发送数据块：</p>
+<p><data block="">\r\n</data></p>
+<p><data block="">是由8位的字节组成的长为<bytes>的chunk。</bytes></data></p>
+<p>发送命令行和数据块后客户端等待返回，返回可能是这样：</p>
+<p>“<stored>\r\n”，表示成功。 “NOT_STORED\r\n”，表示数据没被存储，但不是因为错误。这通常意味着“add”和“replace”命令的条件未满足。 “EXISTS\r\n”，表示你尝试用“cas”命令存储的item已经在上次fetch后被修改过。</stored></p>
+<p>检索命令</p>
+<p>检索命令“get”和“gets”操作起来像这样：</p>
+<p>get<key><em>\r\n gets<key></key></em>\r\n</key></p>
+<p><key>*表示由空格分开的一个或多个字符串键。 命令发送后，客户端希望0个或多个item，每一个item返回一个文本行后跟一个数据块。所有的item传输完毕后，服务器发送“END\r\n”字符串来表示返回的结束。</key></p>
+<p>服务器发送的每个item看起来像这样： VALUE <key><flags><bytes>[<cas unique="">]\r\n <data block="">\r\n <key>表示发送的键 <flags>是由存储命令设置的flags <bytes>表示后面跟的数据块大小，不包括\r\n <cas unique="">是个唯一的64位整型，唯一标识了一个item <data block="">这个item的数据部分</data></cas></bytes></flags></key></data></cas></bytes></flags></key></p>
+<p>如果在请求中出现的一些键没有返回，意味着服务器没有这些键的item（有可能没有被存储过，或者存储过但被删除了空间给其它item，或者超时了，或者显式的被客户端删除了）。</p>
+<p>删除</p>
+<p>“delete”命令允许显式的删除 delete<key>[noreply]\r\n <key>表示客户端像删除的键 “noreply”可选参数，前有介绍</key></key></p>
+<p>对应命令的返回行是以下的其中一个： “DELETE\r\n”表示成功 “NOT_FOUND\r\n”表示找不到</p>
+<p>见下面的“flush_all”命令表示快速使已存在的所有item无效。</p>
+<p>Increment/Decrement</p>
+<p>“incr”和“decr”命令是用来原地改变一些item数据的命令，增加或减少它。Item的数据被当作十进制的64位无符号整型。如果当前数据值不能转化成以上形式，incr/decr命令返回一个错误（memcached&lt;=1.2.6把伪造的值当作0，导致confusion）。还有，item必须已经存在，incr/decr才能工作。这些命令不会把不存在的键当做存在的0值，相反，它们会返回错误。</p>
+<p>客户端发送如下命令行： Incr<key><value>[noreply]\r\n 或者 decr<key><value>[noreply]\r\n <key>表示要修改的键 <value>是客户端想要increase/decrease的item的数量。是一个64位无符号整型表示的十进制数 返回是如下中的其中一个： “NOT_FOUND\r\n” <value>\r\n，是操作完成后item数据的新值。 需要注意的是由“decr”命令造成的下溢：在0上减小，新值为0。“incr”造成的上溢将wrap around 64位掩码。</value></value></key></value></key></value></key></p>
+<p>还需要注意的是…（部分未翻译）</p>
+<p>Touch</p>
+<p>Touch命令用来更新已存在item的超时时间，而不需要先fetch它。</p>
+<p>Touch<key><exptime>[noreply]\r\n</exptime></key></p>
+<p><key>客户端希望服务端删除的键 <exptime>是超时时间。工作机制和更新命令一样（set/add/etc）。这个选项替换了已存在的超时时间。如果一个已存在的item将在10秒内超时，但是接着又touch了一个20秒的超时时间，那么这个item将在20秒内超时。 noreply前有介绍</exptime></key></p>
+<p>这个命令的返回行可以是以下的其中一个：</p>
+<p>“TOUCHED\r\n”表示成功 “NOT_FOUND\r\n”表示键没找到</p>
+<p>Slabs重新分配</p>
+<p>注意：该命令…（部分未翻译）</p>
+<p>Slabs reassign命令是用来重新分布内存的，一旦一个运行的实例已经达到内存的限定值。一个不同的内存布局可能会比服务器启动后自动分配要好。</p>
+<p>Slabs reassign<source class=""><dest class="">\r\n</dest></p>
+<p><source class="">是一个slab class的id号。-1表示“从任何一个有效的class里选” <dest class="">是slab class移出一页至目标的目标id号。</dest></p>
+<p>返回行可以是以下的一个： “OK”表示page已经计划被移动 “BUSY[message]”表示一页正在被处理，稍后重试 “BADCLASS[message]”一个坏的id被指定 “NOSPACE[message]”source class没有空闲页 “NOTFULL[message]”dest class must be full to move new pages to it “UNSAFF[message]”source class现在不能移动一页 “SAME[message]”必须指定不同的id号</p>
+<p>Slabs Automove</p>
+<p>注意：该命令将要被改变</p>
+<p>该命令使得一个后台线程由自己决定什么时候在slab classes之间移动内存。它的实现和选项在几个版本中可能不稳定。详情见wiki/mailing list。</p>
+<p>Automover可以在运行时启用或禁用，使用以下命令 Slabs automove<0|1> 0|1|2表示是否要启用slabs automover 返回始终应该是“OK\r\n” <0>以standby的方式设置线程 <1>表示运行内置的慢算法来选择移出的页 <2>表示每次（不懂）</2></1></0></0|1></p>
+<p>统计</p>
+<p>“stats”命令查询服务器维护的统计信息和其他内部数据。他有两种形式。一种是不带参数的： stats\r\n 服务器会返回general-purpose的统计信息和settings，documented below。另外一种带参数的： stats<args>\r\n 根据<args>，服务器将发送不同的内部数据，参数类型和发送的数据没在这个版本的协议里说明，由memcache 的开发者的方便而改变。</args></args></p>
+<p>General-purpose statistics</p>
+<p>不带参数的命令，服务器返回如下形式的几行： STAT<name><value>\r\n 以“END\r\n”结束返回列表。 在每一个统计行里，<name>统计的名字，<value>是数据。以下是所有返回的统计信息的所有名字，还有对应值的类型和值的含义</value></name></value></name></p>
+<p>类型列的“32u”表示32位无符号整型，“64u”同理。‘32u.32u’表示由冒号分隔的两个32位无符号整型（被当作浮点数）。</p>
+<p>表格一（未列出）</p>
+<p>Setting statistics</p>
+<p>CAVEAT（警告）：这部分描述统计的内容将来将会改变。 携带“settings”参数的“stats”命令返回运行中的memcached的详细设置信息。这主要由处理命令行选项的结果组成。 以下的表格并不保证按指定顺序返回，并且该表并没有列完全。 表格二（未列出）</p>
+<p>Item statistics</p>
+<p>警告：同上。</p>
+<p>带“items”参数的“stats”命令会返回每个slab class存储的item信息。数据的返回格式如下： STAT items:<slabclass>:<stat><value>\r\n 并以“END\r\n”结束。</value></stat></slabclass></p>
+<p>Slabclass用法和“stats slabs”相同，但是“stats slabs”描述大小和内存使用，“stats items”展现出更高层的信息。 下面定义了item值 表格三（未列出） 只显示已存在的slabs，如果没有就会返回一个空集。</p>
+<p>Item size statistics （未完待续）</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux swap]]></title>
+      <url>http://yoursite.com/2016/05/29/Linux-swap/</url>
+      <content type="html"><![CDATA[<p>本文内容来自前辈邹立巍的 《<a href="http://mp.weixin.qq.com/s?__biz=MzA4Nzg5Nzc5OA==&amp;mid=2651660097&amp;idx=1&amp;sn=a3d38e3af2c9d8d431c46fe7680b428d&amp;scene=23&amp;srcid=0606r0ezvInBFsm9Xfm7lENS#rd" title="1" target="_blank" rel="external">Linux SWAP 深度解读</a>》。 这是目前为止看到过的比较深入详细介绍 Swap 的文章，这里先把内容保存下，方便以后细读。 可以关注下<a href="http://liwei.life/" title="l" target="_blank" rel="external">邹立巍的博客</a>。</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>本文讨论的swap基于Linux4.4内核代码。Linux内存管理是一套非常复杂的系统，而swap只是其中一个很小的处理逻辑。</p>
+<p>希望本文能让读者了解Linux对swap的使用大概是什么样子。阅读完本文，应该可以帮你解决以下问题：</p>
+<ul>
+<li>swap到底是干嘛的？  </li>
+<li>swappiness到底是用来调节什么的？  </li>
+<li>kswapd什么时候会进行swap操作？  </li>
+<li>什么是内存水位标记？  </li>
+<li>swap分区的优先级（priority）有啥用？</li>
+</ul>
+<h3 id="什么是SWAP，到底是干嘛的？"><a href="#什么是SWAP，到底是干嘛的？" class="headerlink" title="什么是SWAP，到底是干嘛的？"></a>什么是SWAP，到底是干嘛的？</h3><p>我们一般所说的swap，指的是一个交换分区或文件。在Linux上可以使用swapon -s命令查看当前系统上正在使用的交换空间有哪些，以及相关信息：</p>
+<pre><code>[zorro@zorrozou-pc0 linux-4.4]$ swapon -s
+Filename            Type        Size        Used    Priority
+/dev/dm-4           partition    33554428    0        -1
+</code></pre><p>从功能上讲，交换分区主要是在内存不够用的时候，将部分内存上的数据交换到swap空间上，以便让系统不会因内存不够用而导致oom或者更致命的情况出现。</p>
+<p>所以，当内存使用存在压力，开始触发内存回收的行为时，就可能会使用swap空间。</p>
+<p>内核对swap的使用实际上是跟内存回收行为紧密结合的。那么关于内存回收和swap的关系，我们需要思考以下几个问题：</p>
+<ul>
+<li>为什么要进行内存回收？  </li>
+<li>哪些内存可能会被回收呢？  </li>
+<li>回收的过程中什么时候会进行交换呢？  </li>
+<li>具体怎么交换？</li>
+</ul>
+<p>下面我们就从这些问题出发，一个一个进行分析。</p>
+<h5 id="为什么要进行内存回收？"><a href="#为什么要进行内存回收？" class="headerlink" title="为什么要进行内存回收？"></a>为什么要进行内存回收？</h5><p>内核之所以要进行内存回收，主要原因有两个：</p>
+<p>1）内核需要为任何时刻突发到来的内存申请提供足够的内存。所以一般情况下保证有足够的free空间对于内核来说是必要的。另外，Linux内核使用cache的策略虽然是不用白不用，内核会使用内存中的page cache对部分文件进行缓存，以便提升文件的读写效率。所以内核有必要设计一个周期性回收内存的机制，以便cache的使用和其他相关内存的使用不至于让系统的剩余内存长期处于很少的状态。</p>
+<p>2）当真的有大于空闲内存的申请到来的时候，会触发强制内存回收。</p>
+<p>所以，内核在应对这两类回收的需求下，分别实现了两种不同的机制：</p>
+<ul>
+<li><p>一个是使用kswapd进程对内存进行周期检查，以保证平常状态下剩余内存尽可能够用。</p>
+</li>
+<li><p>另一个是直接内存回收（directpagereclaim），就是当内存分配时没有空闲内存可以满足要求时，触发直接内存回收。</p>
+</li>
+</ul>
+<p>这两种内存回收的触发路径不同：</p>
+<ul>
+<li>一个是由内核进程kswapd直接调用内存回收的逻辑进行内存回收</li>
+</ul>
+<blockquote>
+<p>参见mm/vmscan.c中的kswapd()主逻辑</p>
+</blockquote>
+<ul>
+<li>另一个是内存申请的时候进入slow path的内存申请逻辑进行回收</li>
+</ul>
+<blockquote>
+<p>参见内核代码中的mm/page_alloc.c中的__alloc_pages_slowpath方法</p>
+</blockquote>
+<p>这两个方法中实际进行内存回收的过程殊途同归，最终都是调用shrink_zone()方法进行针对每个zone的内存页缩减。</p>
+<p>这个方法中会再调用shrink_lruvec()这个方法对每个组织页的链表进程检查。找到这个线索之后，我们就可以清晰的看到内存回收操作究竟针对的page有哪些了。</p>
+<blockquote>
+<p>这些链表主要定义在mm/vmscan.c一个enum中</p>
+</blockquote>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap1.png" alt="1"></p>
+<p>根据这个enum可以看到，内存回收主要需要进行扫描的链表有如下4个：</p>
+<ul>
+<li>anon的inactive</li>
+<li>anon的active</li>
+<li>file的inactive</li>
+<li>file的active</li>
+</ul>
+<p>就是说，内存回收操作主要针对的就是内存中的文件页（file  cache）和匿名页。</p>
+<p>关于活跃（active）还是不活跃（inactive）的判断内核会使用lru算法进行处理并进行标记，我们这里不详细解释这个过程。</p>
+<p>整个扫描的过程分几个循环：</p>
+<ol>
+<li><p>首先扫描每个zone上的cgroup组；</p>
+</li>
+<li><p>然后再以cgroup的内存为单元进行page链表的扫描；</p>
+</li>
+<li><p>内核会先扫描anon的active链表，将不频繁的放进inactive链表中，然后扫描inactive链表，将里面活跃的移回active中；</p>
+</li>
+</ol>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap2.png" alt="2"></p>
+<ol>
+<li><p>进行swap的时候，先对inactive的页进行换出；</p>
+</li>
+<li><p>如果是file的文件映射page页，则判断其是否为脏数据，如果是脏数据就写回，不是脏数据可以直接释放。</p>
+</li>
+</ol>
+<p>这样看来，<strong>内存回收这个行为会对两种内存的使用进行回收</strong>:</p>
+<ul>
+<li>一种是anon的匿名页内存，主要回收手段是swap；</li>
+<li>另一种是file-backed的文件映射页，主要的释放手段是写回和清空。</li>
+</ul>
+<p>因为针对filebased的内存，没必要进行交换，其数据原本就在硬盘上，回收这部分内存只要在有脏数据时写回，并清空内存就可以了，以后有需要再从对应的文件读回来。</p>
+<p>内存对匿名页和文件缓存一共用了四条链表进行组织，回收过程主要是针对这四条链表进行扫描和操作。</p>
+<h3 id="swappiness到底是用来调节什么的？"><a href="#swappiness到底是用来调节什么的？" class="headerlink" title="swappiness到底是用来调节什么的？"></a>swappiness到底是用来调节什么的？</h3><p>很多人应该都知道/proc/sys/vm/swappiness这个文件，是个可以用来调整跟swap相关的参数。这个文件的默认值是60，可以的取值范围是0-100。</p>
+<blockquote>
+<p>这很容易给大家一个暗示：我是个百分比哦！</p>
+</blockquote>
+<p>那么这个文件具体到底代表什么意思呢？我们先来看一下说明：</p>
+<blockquote>
+<p>======<br>swappiness</p>
+<p>This control is used to define how aggressive the kernel will swap memory pages. Higher values will increase agressiveness, lower values decrease the amount of swap.</p>
+<p>A value of 0 instructs the kernel not to initiate swap until the amount of free and file-backed pages is less than the high water mark in a zone.</p>
+<p>The default value is 60.</p>
+<p>======</p>
+</blockquote>
+<p>这个文件的值用来定义内核使用swap的积极程度：</p>
+<ul>
+<li>值越高，内核就会越积极的使用swap；</li>
+<li>值越低，就会降低对swap的使用积极性。</li>
+<li>如果这个值为0，那么内存在free和file-backed使用的页面总量小于高水位标记（high water mark）之前，不会发生交换。</li>
+</ul>
+<p>在这里我们可以理解file-backed这个词的含义了，实际上就是上文所说的文件映射页的大小。</p>
+<p><strong>那么这个swappiness到底起到了什么作用呢？</strong></p>
+<p>我们换个思路考虑这个事情。假设让我们设计一个内存回收机制，要去考虑将一部分内存写到swap分区上，将一部分file-backed的内存写回并清空，剩余部分内存出来，我们将怎么设计？</p>
+<p><strong>我想应该主要考虑这样几个问题:</strong></p>
+<ol>
+<li><p>如果回收内存可以有两种途径（匿名页交换和file缓存清空），那么我应该考虑在本次回收的时候，什么情况下多进行file写回，什么情况下应该多进行swap交换。说白了就是平衡两种回收手段的使用，以达到最优。</p>
+</li>
+<li><p>如果符合交换条件的内存较长，是不是可以不用全部交换出去？比如可以交换的内存有100M，但是目前只需要50M内存，实际只要交换50M就可以了，不用把能交换的都交换出去。</p>
+</li>
+</ol>
+<p>分析代码会发现，Linux内核对这部分逻辑的实现代码在get_scan_count()这个方法中，这个方法被shrink_lruvec()调用。</p>
+<p>get_sacn_count()就是处理上述逻辑的，swappiness是它所需要的一个参数，这个参数实际上是指导内核在清空内存的时候，是更倾向于清空file-backed内存还是更倾向于进行匿名页的交换的。</p>
+<p>当然，<strong>这只是个倾向性，是指在两个都够用的情况下，更愿意用哪个，如果不够用了，那么该交换还是要交换</strong>。</p>
+<p>简单看一下get_sacn_count()函数的处理部分代码，其中关于swappiness的第一个处理是：</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap3.png" alt="3"></p>
+<p>这里注释的很清楚：</p>
+<ol>
+<li><p>如果swappiness设置为100，那么匿名页和文件将用同样的优先级进行回收。</p>
+<p> 很明显，使用清空文件的方式将有利于减轻内存回收时可能造成的IO压力。</p>
+<p> 因为如果file-backed中的数据不是脏数据的话，那么可以不用写回，这样就没有IO发生，而一旦进行交换，就一定会造成IO。</p>
+<p> 所以系统默认将swappiness的值设置为60，这样回收内存时，对file-backed的文件cache内存的清空比例会更大，内核将会更倾向于进行缓存清空而不是交换。</p>
+</li>
+</ol>
+<ol>
+<li><p>这里的swappiness值如果是60，那么是不是说内核回收的时候，会按照60:140的比例去做相应的swap和清空file-backed的空间呢？并不是。</p>
+<p> 在做这个比例计算的时候，内核还要参考当前内存使用的其他信息。对这里具体是怎么处理感兴趣的人，可以自己详细看get_sacn_count()的实现，本文就不多解释了。</p>
+<p> 我们在此要明确的概念是：swappiness的值是用来控制内存回收时，回收的匿名页更多一些还是回收的file cache更多一些。</p>
+</li>
+</ol>
+<ol>
+<li><p>swappiness设置为0的话，是不是内核就根本不会进行swap了呢？这个答案也是否定的。</p>
+<p> <strong>首先是内存真的不够用的时候，该swap的话还是要swap</strong>。</p>
+<p> 其次在内核中还有一个逻辑会导致直接使用swap，内核代码是这样处理的：</p>
+</li>
+</ol>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap4.png" alt="4"></p>
+<p>这里的逻辑是说，如果触发的是全局回收，并且zonefile + zonefree &lt;= high_wmark_pages(zone)条件成立时，就将scan_balance这个标记置为SCAN_ANON。</p>
+<p>后续处理scan_balance的时候，如果它的值是SCAN_ANON，则一定会进行针对匿名页的swap操作。</p>
+<p>要理解这个行为，我们首先要搞清楚什么是高水位标记（high_wmark_pages）。</p>
+<h3 id="kswapd什么时候会进行swap操作？"><a href="#kswapd什么时候会进行swap操作？" class="headerlink" title="kswapd什么时候会进行swap操作？"></a>kswapd什么时候会进行swap操作？</h3><p>我们回到kswapd周期检查和直接内存回收的两种内存回收机制。</p>
+<p>直接内存回收比较好理解，当申请的内存大于剩余内存的时候，就会触发直接回收。</p>
+<p>那么kswapd进程在周期检查的时候触发回收的条件是什么呢？<br>还是从设计角度来看，kswapd进程要周期对内存进行检测，达到一定阈值的时候开始进行内存回收。</p>
+<p>这个所谓的阈值可以理解为内存目前的使用压力，就是说，虽然我们还有剩余内存，但是当剩余内存比较小的时候，就是内存压力较大的时候，就应该开始试图回收些内存了，这样才能保证系统尽可能的有足够的内存给突发的内存申请所使用。</p>
+<h3 id="什么是内存水位标记？-watermark"><a href="#什么是内存水位标记？-watermark" class="headerlink" title="什么是内存水位标记？(watermark)"></a>什么是内存水位标记？(watermark)</h3><p>那么如何描述内存使用的压力呢？</p>
+<p>Linux内核使用水位标记（watermark）的概念来描述这个压力情况。</p>
+<p>Linux为内存的使用设置了三种内存水位标记:high、low、min。他们所标记的含义分别为：</p>
+<ul>
+<li><p>剩余内存在high以上表示内存剩余较多，目前内存使用压力不大；</p>
+</li>
+<li><p>high-low的范围表示目前剩余内存存在一定压力；</p>
+</li>
+<li><p>low-min表示内存开始有较大使用压力，剩余内存不多了；</p>
+</li>
+<li><p>min是最小的水位标记，当剩余内存达到这个状态时，就说明内存面临很大压力。</p>
+</li>
+<li><p>小于min这部分内存，内核是保留给特定情况下使用的，一般不会分配。</p>
+</li>
+</ul>
+<p>内存回收行为就是基于剩余内存的水位标记进行决策的：</p>
+<p>当系统剩余内存低于watermark[low]的时候，内核的kswapd开始起作用，进行内存回收。直到剩余内存达到watermark[high]的时候停止。</p>
+<p>如果内存消耗导致剩余内存达到了或超过了watermark[min]时，就会触发直接回收（direct reclaim）。</p>
+<p>明白了水位标记的概念之后，zonefile + zonefree &lt;= high_wmark_pages(zone)这个公式就能理解了。</p>
+<blockquote>
+<p>这里的zonefile相当于内存中文件映射的总量，zonefree相当于剩余内存的总量。</p>
+</blockquote>
+<p>内核一般认为，如果zonefile还有的话，就可以尽量通过清空文件缓存获得部分内存，而不必只使用swap方式对anon的内存进行交换。</p>
+<p>整个判断的概念是说，在全局回收的状态下（有global_reclaim(sc)标记），如果当前的文件映射内存总量+剩余内存总量的值评估小于等于watermark[high]标记的时候，就可以进行直接swap了。</p>
+<p>这样是为了防止进入cache陷阱，具体描述可以见代码注释。</p>
+<p>这个判断对系统的影响是，swappiness设置为0时，有剩余内存的情况下也可能发生交换。</p>
+<p>那么watermark相关值是如何计算的呢？</p>
+<p>所有的内存watermark标记都是根据当前内存总大小和一个可调参数进行运算得来的，这个参数是：<code>/proc/sys/vm/min_free_kbytes</code></p>
+<ul>
+<li>首先这个参数本身决定了系统中每个zone的watermark[min]的值大小。</li>
+<li>然后内核根据min的大小并参考每个zone的内存大小分别算出每个zone的low水位和high水位值。</li>
+</ul>
+<p>想了解具体逻辑可以参见源代码目录下的该文件：</p>
+<blockquote>
+<p>mm/page_alloc.c</p>
+</blockquote>
+<p>在系统中可以从/proc/zoneinfo文件中查看当前系统的相关的信息和使用情况。</p>
+<p>我们会发现以上内存管理的相关逻辑都是以zone为单位的，这里zone的含义是指内存的分区管理。</p>
+<p>Linux将内存分成多个区，主要有:</p>
+<ul>
+<li>直接访问区(DMA)</li>
+<li>一般区(Normal)</li>
+<li>高端内存区(HighMemory)</li>
+</ul>
+<p>内核对内存不同区域的访问因为硬件结构因素会有寻址和效率上的差别。如果在NUMA架构上，不同CPU所管理的内存也是不同的zone。</p>
+<p><strong>相关参数设置</strong></p>
+<p><strong>zone_reclaim_mode：</strong></p>
+<p>zone_reclaim_mode模式是在2.6版本后期开始加入内核的一种模式，可以用来管理当一个内存区域(zone)内部的内存耗尽时，是从其内部进行内存回收还是可以从其他zone进行回收的选项，我们可以通过/proc/sys/vm/zone_reclaim_mode文件对这个参数进行调整。</p>
+<p>在申请内存时(内核的get_page_from_freelist()方法中)，内核在当前zone内没有足够内存可用的情况下，会根据zone_reclaim_mode的设置来决策是从下一个zone找空闲内存还是在zone内部进行回收。这个值为0时表示可以从下一个zone找可用内存，非0表示在本地回收。</p>
+<p><strong>这个文件可以设置的值及其含义如下：</strong></p>
+<blockquote>
+<p>echo 0 /proc/sys/vm/zone_reclaim_mode：意味着关闭zone_reclaim模式，可以从其他zone或NUMA节点回收内存。</p>
+<p>echo 1 /proc/sys/vm/zone_reclaim_mode：表示打开zone_reclaim模式，这样内存回收只会发生在本地节点内。</p>
+<p>echo 2 /proc/sys/vm/zone_reclaim_mode：在本地回收内存时，可以将cache中的脏数据写回硬盘，以回收内存。</p>
+<p>echo 4 /proc/sys/vm/zone_reclaim_mode：可以用swap方式回收内存。</p>
+</blockquote>
+<p>不同的参数配置会在NUMA环境中对其他内存节点的内存使用产生不同的影响，大家可以根据自己的情况进行设置以优化你的应用。</p>
+<p>默认情况下，zone_reclaim模式是关闭的。这在很多应用场景下可以提高效率，比如文件服务器，或者依赖内存中cache比较多的应用场景。</p>
+<p>这样的场景对内存cache速度的依赖要高于进程进程本身对内存速度的依赖，所以我们宁可让内存从其他zone申请使用，也不愿意清本地cache。</p>
+<p>如果确定应用场景是内存需求大于缓存，而且尽量要避免内存访问跨越NUMA节点造成的性能下降的话，则可以打开zone_reclaim模式。</p>
+<p>此时页分配器会优先回收容易回收的可回收内存（主要是当前不用的page cache页），然后再回收其他内存。</p>
+<p>打开本地回收模式的写回可能会引发其他内存节点上的大量的脏数据写回处理。如果一个内存zone已经满了，那么脏数据的写回也会导致进程处理速度收到影响，产生处理瓶颈。</p>
+<p>这会降低某个内存节点相关的进程的性能，因为进程不再能够使用其他节点上的内存。但是会增加节点之间的隔离性，其他节点的相关进程运行将不会因为另一个节点上的内存回收导致性能下降。</p>
+<p>除非针对本地节点的内存限制策略或者cpuset配置有变化，对swap的限制会有效约束交换只发生在本地内存节点所管理的区域上。</p>
+<p><strong>min_unmapped_ratio：</strong></p>
+<p>这个参数只在NUMA架构的内核上生效。这个值表示NUMA上每个内存区域的pages总数的百分比。</p>
+<p>在zone_reclaim_mode模式下，只有当相关区域的内存使用达到这个百分比，才会发生区域内存回收。</p>
+<p>在zone_reclaim_mode设置为4的时候，内核会比较所有的file-backed和匿名映射页，包括swapcache占用的页以及tmpfs文件的总内存使用是否超过这个百分比。</p>
+<p>其他设置的情况下，只比较基于一般文件的未映射页，不考虑其他相关页。</p>
+<p><strong>page-cluster：</strong></p>
+<p>page-cluster是用来控制从swap空间换入数据的时候，一次连续读取的页数，这相当于对交换空间的预读。这里的连续是指在swap空间上的连续，而不是在内存地址上的连续。</p>
+<p>因为swap空间一般是在硬盘上，对硬盘设备的连续读取将减少磁头的寻址，提高读取效率。</p>
+<p>这个文件中设置的值是2的指数。就是说，如果设置为0，预读的swap页数是2的0次方，等于1页。如果设置为3，就是2的3次方，等于8页。</p>
+<p>同时，设置为0也意味着关闭预读功能。文件默认值为3。我们可以根据我们的系统负载状态来设置预读的页数大小。</p>
+<p><strong>swap的相关操纵命令</strong></p>
+<p>可以使用mkswap将一个分区或者文件创建成swap空间。swapon可以查看当前的swap空间和启用一个swap分区或者文件。swapoff可以关闭swap空间。</p>
+<p>我们使用一个文件的例子来演示一下整个操作过程：</p>
+<p>制作 swap 文件<br><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap5.png" alt="5"></p>
+<p>启用 swap 文件<br><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap6.png" alt="6"></p>
+<p>关闭 swap 空间<br><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap7.png" alt="7"></p>
+<h3 id="swap分区的优先级（priority）有啥用？"><a href="#swap分区的优先级（priority）有啥用？" class="headerlink" title="swap分区的优先级（priority）有啥用？"></a>swap分区的优先级（priority）有啥用？</h3><p>在使用多个swap分区或者文件的时候，还有一个优先级的概念（Priority）。</p>
+<p>在swapon的时候，我们可以使用-p参数指定相关swap空间的优先级，值越大优先级越高，可以指定的数字范围是－1到32767。</p>
+<p>内核在使用swap空间的时候总是先使用优先级高的空间，后使用优先级低的。</p>
+<p>当然如果把多个swap空间的优先级设置成一样的，那么两个swap空间将会以轮询方式并行进行使用。</p>
+<p>如果两个swap放在两个不同的硬盘上，相同的优先级可以起到类似RAID0的效果，增大swap的读写效率。</p>
+<p>另外，编程时使用mlock()也可以将指定的内存标记为不会换出，具体帮助可以参考man 2 mlock。</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>关于swap的使用建议，针对不同负载状态的系统是不一样的。有时我们希望swap大一些，可以在内存不够用的时候不至于触发oom-killer导致某些关键进程被杀掉，比如数据库业务。</p>
+<p>也有时候我们希望不要swap，<strong>因为当大量进程爆发增长导致内存爆掉之后，会因为swap导致IO跑死，整个系统都卡住，无法登录，无法处理</strong>。</p>
+<p>这时候我们就希望不要swap，即使出现oom-killer也造成不了太大影响，但是不能允许服务器因为IO卡死像多米诺骨牌一样全部死机，而且无法登陆。跑cpu运算的无状态的apache就是类似这样的进程池架构的程序。</p>
+<p>所以：</p>
+<ul>
+<li>swap到底怎么用?</li>
+<li>要还是不要？</li>
+<li>设置大还是小？</li>
+<li>相关参数应该如何配置？</li>
+</ul>
+<p>是要根据我们自己的生产环境的情况而定的。</p>
+<p>阅读完本文后希望大家可以明白一些swap的深层次知识。</p>
+<h3 id="Q-amp-A："><a href="#Q-amp-A：" class="headerlink" title="Q&amp;A："></a>Q&amp;A：</h3><ul>
+<li>一个内存剩余还比较大的系统中，是否有可能使用swap？</li>
+</ul>
+<blockquote>
+<p>A: 有可能，如果运行中的某个阶段出发了这个条件”zonefile+zonefree&lt;=high_wmark_pages(zone)“，就可能会swap。</p>
+</blockquote>
+<ul>
+<li>swappiness设置为0就相当于关闭swap么？</li>
+</ul>
+<blockquote>
+<p>A: 不是的，关闭swap要使用swapoff命令。swappiness只是在内存发生回收操作的时候用来平衡cache回收和swap交换的一个参数，调整为0意味着，尽量通过清缓存来回收内存。</p>
+</blockquote>
+<ul>
+<li>A: swappiness设置为100代表系统会尽量少用剩余内存而多使用swap么？</li>
+</ul>
+<blockquote>
+<p>不是的，这个值设置为100表示内存发生回收时，从cache回收内存和swap交换的优先级一样。就是说，如果目前需求100M内存，那么较大机率会从cache中清除50M内存，再将匿名页换出50M，把回收到的内存给应用程序使用。但是这还要看cache中是否能有空间，以及swap是否可以交换50m。内核只是试图对它们平衡一些而已。</p>
+</blockquote>
+<ul>
+<li>kswapd进程什么时候开始内存回收？</li>
+</ul>
+<blockquote>
+<p>A: kswapd根据内存水位标记决定是否开始回收内存，如果标记达到low就开始回收，回收到剩余内存达到high标记为止。</p>
+</blockquote>
+<ul>
+<li>如何查看当前系统的内存水位标记？</li>
+</ul>
+<blockquote>
+<p>A: cat /proc/zoneinfo。</p>
+</blockquote>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[MySQL 从库延迟原因以及分析]]></title>
+      <url>http://yoursite.com/2016/05/29/MySQL-%E4%BB%8E%E5%BA%93%E5%BB%B6%E8%BF%9F%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E5%88%86%E6%9E%90/</url>
+      <content type="html"><![CDATA[<h3 id="从库延迟"><a href="#从库延迟" class="headerlink" title="从库延迟"></a>从库延迟</h3><p>在 MySQL 5.6 之前从库复制都是单线程的，因此当主库压力比较大，从库访问量也比较大的时候容易出现从库延迟的状况，以下列出了一些造成从库延迟的原因以及可能的解决办法。参考了淘宝内核月报的文章，<a href="http://mysql.taobao.org/monthly/2016/04/08/" title="tao" target="_blank" rel="external">这篇文章</a>比较好</p>
+<h3 id="延迟的原因"><a href="#延迟的原因" class="headerlink" title="延迟的原因"></a>延迟的原因</h3><p>1、内存配置过小或者 iops 配置（这个指的是 io capacity）过小</p>
+<p>2、主库 TPS 过高。（从库单线程复制会遇到此问题）</p>
+<p>3、主库的 DDL 操作 （alter，drop，repair，create）<br>1）主库的 DDL 操作，在主库上串行执行 10 分钟，到从库上也会串行执行 10 分钟，导致延迟<br>2）从库上有慢查，会阻塞来自主库的 DDL 操作，直到查询结束为止。通过 show processlist 可以看到复制线程处于 waiting for table metadata lock 状态<br>3）如果从库开了 query_cache ，主库下来的 SQL 也可能会遇到 Waiting for query cache lock 的情况。如图。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/waitingforquerycache.png" alt="qu"></p>
+<p>4、主库执行大事务导致延迟<br>比如在主库执行一个大的update、delete、insert … select的事务操作，产生大量的binlog传送到只读节点，只读节点需要花费与主库相同的时间来完成该事务操作，进而导致了只读节点的延迟。</p>
+<p>只读实例发生延迟，在只读节点执行show slave status\G命令，可以通过两个关键的位点参数来判断只读实例上是否在执行大事务：Seconds_Behind_Master不断增加，但是Exec_Master_Log_Pos 却没有发生变化，这样则可以判断只读节点的SQL线程在执行一个大的事务或者DDL操作。</p>
+<p>针对此类大事务延迟的场景，需要将大事务拆分成为小事务进行批量提交，这样只读节点就可以迅速的完成事务的执行，不会造成数据的延迟</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E4%B8%BB%E5%BA%93%E4%B8%8A%E4%B8%80%E4%B8%AA%E5%A4%A7delete3.png" alt="aa"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E4%B8%BB%E5%BA%93%E4%B8%8A%E4%B8%80%E4%B8%AA%E5%A4%A7delete1.png" alt="bb"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E4%B8%BB%E5%BA%93%E4%B8%8A%E4%B8%80%E4%B8%AA%E5%A4%A7delete2.png" alt="cc"></p>
+<p>5、其它情况，如对无主键表的删除。<br>用户在删除数据的时候，由于表主键的主键的缺少，同时删除条件没有索引，或者删除的条件过滤性极差，导致slave出现hang住，会严重的影响生产环境的稳定性。因此在设计表结构的时候一定要为表加上主键，主键可以认为是innodb存储引擎的生命。以下为阿里的几个案例以及分析（本案例的生产环境的binlog为row模式，对于myisam存储引擎也有同样的问题）：<br><a href="https://yq.aliyun.com/articles/9066" target="_blank" rel="external">https://yq.aliyun.com/articles/9066</a> （好文）<br><a href="https://yq.aliyun.com/articles/27792?spm=5176.blog9066.yqblogcon1.10.oG6gRV" target="_blank" rel="external">https://yq.aliyun.com/articles/27792?spm=5176.blog9066.yqblogcon1.10.oG6gRV</a> （常见延迟问题）  </p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>综上所述，当只读实例出现延迟后的排查思路</p>
+<ul>
+<li>看只读节点IOPS定位是否存在资源瓶颈</li>
+<li>看只读节点的binlog增长量定位是否存在大事务</li>
+<li>看只读节点的comdml性能指标，对比主节点的comdml定位是否是主库写入压力过高导致</li>
+<li>看只读节点show full processlist，判断是否有Waiting for table metadata lock和alter，repair，create等ddl操作。</li>
+</ul>
+<p>最佳实践</p>
+<ul>
+<li>使用innodb存储引擎</li>
+<li>只读实例的规格不低于主实例</li>
+<li>大事务拆分为小事务</li>
+<li>多个只读节点冗余</li>
+<li>DDL变更期间观察是否有大查询</li>
+</ul>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[zabbix如何优化]]></title>
+      <url>http://yoursite.com/2016/05/29/zabbix%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96/</url>
+      <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>相信很多人都用过一款老牌监控软件 zabbix，功能强大，用起来爽，本人也维护了 4 - 5 个部门的 zabbix 数据库。大多数部门用的 zabbix 监控项不多，监控机器数量也不多因此平时没什么问题。但是像基础运维平台等部门，监控几千台机器，几百个监控项，后台数据库压力就特别大。zabbix 数据默认存放在 MySQL，基本 SQL 都是自己生成，当监控的机器数多了，监控项也多了之后，很多低效 SQL 的问题就暴露出来了。下面记录下对 zabbix 的运维改造过程。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>读写量大。写量每天 1 亿次，曾一度超过微博所有端口的写量。读量每天 2 亿，也排在所有端口读量的前 6 名。</li>
+<li>数据量大。history、history_uint 表，trends 表等是不断积累的。</li>
+<li>zabbix 自带有定期删除的机制，但每次删除从库就延迟，加上读写量又大，从库延迟追不回来。</li>
+<li>很难备份。</li>
+<li>读写都在主库上，主库压力较大</li>
+</ul>
+<h3 id="改造"><a href="#改造" class="headerlink" title="改造"></a>改造</h3><p>针对以上这些问题，开始了一步步的改造，只要是能优化、容易优化的方法基本都使了。</p>
+<ul>
+<li>读写分离。zabbix 本身不支持读写分离，业务层面使用 oneproxy，而后台则使用主从架构，用 DNS 做的负载均衡，在从库上表现就是轮询多个 ip。这有个问题，虽然主库压力小了，但从库压力相对大了。线上服务器基本是 8 核，32-64 G 内存，sas raid 10 配置，因为机器资源不够，怕影响其它服务也不能混跑，因此只配了一主两从。大部分读都切到从库了，主库上还是有部分读。</li>
+<li>部分表用 tokudb 压缩。先清空一遍 history 和 trends 表，再将引擎改为 tokudb ，分 1000 个分区。<a href="https://www.zabbix.org/wiki/Docs/howto/mysql_partition" title="1" target="_blank" rel="external">zabbix 官方</a>用的存储过程来定时创建和删除分区，但按照规范不使用存储过程，因此改为手动一次性创建分区，一天一个分区够三年用了。</li>
+<li>停止 zabbix 自带的 housekeeper 删数据，改为外部的定时任务去删。 housekeeper 采用的 delete，不加约束的 delete 很容易造成从库延迟；而采用 cron 的话只需要定期删除一些分区即可，比 delete 高效。</li>
+<li>用 cgroup 限制 cpu 的使用。一个是 tokudb 引擎比较耗 cpu ，第二个是 zabbix 本身负载较高，需要做些限制。</li>
+<li>为了省资源，也不做备份了，监控数据本身也不是特别重要，业务也允许丢数据。</li>
+<li>tokudb 开启 RFR 特性，但对 insert 效果比较好，而 zabbix 主要是 update，提升并不是很大。</li>
+</ul>
+<h3 id="改造后"><a href="#改造后" class="headerlink" title="改造后"></a>改造后</h3><p>改造完成后主库压力降了很多，服务看似正常了。一段时间过后又冒出了新问题，主库每过一段时间就重启，并且发现 swap 用完后要么是 MySQL 实例被 kill，要么是机器重启。如下是被 kill 的情况。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/zabbix%E7%9A%84MySQL%E5%AE%9E%E4%BE%8B%E8%A2%ABkill.png" alt="kill"></p>
+<p>通过查看服务器一段时间的资源使用情况，发现一个规律：每天晚上 0 点开始的一段时间，机器负载异常，cpu idle 掉的厉害，memfree 和 swapfree 突然减少。询问业务后，原来每天晚上 zabbix 都要重启一次，很多表项需要重新加载。猜测造成的原因为重启这段时间内访问压力过大，可用内存不够导致 swap。如下两幅图是主库的 CPU 和 MEM 使用情况。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/zabbix%E6%AF%8F%E5%A4%A9%E6%99%9A%E4%B8%8A0%E7%82%B9%E5%88%B00%E7%82%B9%E5%8D%8A%E7%9A%84cpu%E6%B6%88%E8%80%97.png" alt="cpu"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/zabbix%E5%86%85%E5%AD%98%E5%92%8Cswap%E4%BD%BF%E7%94%A8.png" alt="mem"></p>
+<p>从库上也有 swap ，但是从库并没有因为内存不够而被 kill 的情况。如下是从库的 CPU 情况，下降的并不明显</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/zabbix%E4%BB%8E%E5%BA%93%E6%9C%BA%E5%99%A8CPU%E4%B8%8B%E9%99%8D%E7%9A%84%E5%B9%B6%E4%B8%8D%E6%98%8E%E6%98%BE.png" alt="6"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/zabbix%E4%BB%8E%E5%BA%93MEM.png" alt="slave"></p>
+<p>最后跟业务沟通，业务调整了刷新数据的策略，避免在短时间内出现负载的高峰，于是该端口恢复了正常。</p>
+<h3 id="三个问题"><a href="#三个问题" class="headerlink" title="三个问题"></a>三个问题</h3><ul>
+<li>为什么主库机器内存耗的这么快，实例经常被 kill（主从 swappiness 都设置为 1，并且主库内存有 64G，tokudb 20G，innodb 16G。从库都只有一半）</li>
+<li>tokudb 除了分配的内存，难道还会大量使用 OS 内存？</li>
+<li>有必要对 Server 或者引擎层面的参数做个监控，根据参数的变化趋势来及时发现问题。</li>
+</ul>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[运维常见问题以及排查]]></title>
+      <url>http://yoursite.com/2016/05/29/%E8%BF%90%E7%BB%B4%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E6%8E%92%E6%9F%A5/</url>
+      <content type="html"><![CDATA[<h3 id="运维中的常见问题"><a href="#运维中的常见问题" class="headerlink" title="运维中的常见问题"></a>运维中的常见问题</h3><p>作为一个 DBA ，肯定会遇到线上突发或者累计至爆发的各种问题。虽然现在讲自动化运维程度多少高，云服务多么先进，有些问题还是得靠 DBA 去解决，只不过问题的发生可以依靠监控、依靠自动化来进行报警。当问题发生后，就考验 DBA 的处理问题的能力了，而经验越多，就越容易处理，处理的也越快，造成的影响和损失就越小。因此，为什么招聘的时候都愿找经验老道的，原因就在这了。</p>
+<p>以下列出了一些我在工作期间遇到的一些问题以及相应的处理办法，作为一个记录。</p>
+<ul>
+<li>服务器负载过高<ul>
+<li>CPU</li>
+<li>IO</li>
+</ul>
+</li>
+<li>服务器 swap </li>
+<li>MySQL 实例问题<ul>
+<li>从库延迟</li>
+<li>实例重启</li>
+</ul>
+</li>
+<li>文件系统、磁盘等问题</li>
+</ul>
+<h3 id="服务器负载过高"><a href="#服务器负载过高" class="headerlink" title="服务器负载过高"></a>服务器负载过高</h3><p>服务器四大资源：CPU、内存、磁盘、网络，对于 MySQL 服务而言，主要是占用 CPU、内存和磁盘这三块。当收到负载高的报警时，往往是体现在 CPU、IO 的过渡使用，最直观的体现就是 load 超过核数的几倍到几百倍。</p>
+<ul>
+<li>CPU 使用过高（会有 CPU us、sy、wa 分别过高的情况，大部分情况下都是由慢查引起的）</li>
+</ul>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%8A%93%E7%AB%99%E6%85%A2%E6%9F%A5%E8%B4%9F%E8%BD%BD%E6%83%85%E5%86%B5.png" alt="mc"></p>
+<p>这是一个 8 核的服务器，load 在 3 倍左右，而 CPU 基本上被一个 MySQL 实例用完了，并且通过 us 字段可以判断 CPU 基本是消耗在大量的计算上。登上实例 show full processlist 后发现满屏的 sorting result，并且连接数达到了 8000 个（这里忘记截图了）。这不仅会影响当前服务，还会波及同服务器上的其它 MySQL 服务。并且还会造成另外一个问题：服务器内存不够分配，可能会使用 swap。</p>
+<p>解决的办法比较简单粗暴，用 pt-kill 工具直接将这些慢查杀了，大概 10 分钟后服务器又恢复了正常。下图是当时 kill 的 SQL 语句。当然杀完后还需要联系业务对 SQL 进行修改优化。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E6%8A%93%E7%AB%99%E6%85%A2%E6%9F%A5%E8%AF%AD%E5%8F%A5.png" alt="yuju"></p>
+<ul>
+<li>load 过高还有可能是其它问题引起的。</li>
+</ul>
+<p>见下图，这个程序是用来获取服务器上 MySQL 响应时间的，但是因为某种资源未能满足便不断堆积，造成 load 超过 500 多。并且这些进程都处于 D 状态（不可中断状态），没法 kill，如果要解决要么就满足资源，要么就重启。这里有一篇文章讲 <a href="http://blog.chinaunix.net/uid-20639449-id-1909084.html" title="dz" target="_blank" rel="external">D 和 Z 状态的进程的</a>。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E5%BC%82%E5%B8%B8%E8%BF%9B%E7%A8%8B.png" alt="异常进程"></p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E5%BC%82%E5%B8%B8%E8%BF%9B%E7%A8%8B%E6%8A%8Aload%E5%BC%84%E8%80%81%E9%AB%98.png" alt="load"></p>
+<h3 id="服务器-swap"><a href="#服务器-swap" class="headerlink" title="服务器 swap"></a>服务器 swap</h3><p>目前服务器上 swapiness 参数配置的都是 1，以最低的概率使用 swap。如果发现还是用了 swap ，甚至达到 80% 以上，大部分情况都是因为某段时间的 query 连接数异常高，并且每个连接都需要进行内存排序，空闲内存不足，导致 swap。日积月累，严重的会导致 MySQL 实例被 kill。可参照另一篇文章：<a href="http://shuxiang1990.github.io/2016/05/29/zabbix%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96/" title="zabbix" target="_blank" rel="external">zabbix 如何优化</a></p>
+<p>关于 swap 还有另外一个问题，就是明明空闲内存还很多，但偏偏使用了 swap。关于这个问题，得好好研究下内核的 swap 机制了。</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/swap%E9%97%AE%E9%A2%98.png" alt="swap"></p>
+<h3 id="MySQL-实例问题"><a href="#MySQL-实例问题" class="headerlink" title="MySQL 实例问题"></a>MySQL 实例问题</h3><ul>
+<li>从库延迟</li>
+<li>实例重启</li>
+</ul>
+<h3 id="文件系统、磁盘等问题"><a href="#文件系统、磁盘等问题" class="headerlink" title="文件系统、磁盘等问题"></a>文件系统、磁盘等问题</h3><ul>
+<li><p>文件系统 read only 或者分区写满了。</p>
+<p>  数据写不进去，对于 tokudb 引擎，当分区可用空间小于 5% 时就会写不进去。<br>  对于分区满的情况，解决办法有两个：用 tune2fs 命令解除保留的分区空间，或者删除无用的数据。</p>
+</li>
+<li>磁盘有坏盘</li>
+</ul>
+<p>执行 iostat 命令结果不正常</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E7%A3%81%E7%9B%98%E5%9D%8F%E7%9B%981.png" alt="1"></p>
+<p>用某个脚本看磁盘分区信息后发现问题</p>
+<p><img src="http://7xsphq.com1.z0.glb.clouddn.com/%E7%A3%81%E7%9B%98%E5%9D%8F%E7%9B%982.png" alt="2"></p>
+<p>对于文件系统或者坏盘的问题，只能重装或者换盘了。</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[MySQL InnoDB 的 Change Buffer]]></title>
+      <url>http://yoursite.com/2016/05/28/MySQL-InnoDB-%E7%9A%84-Change-Buffer/</url>
+      <content type="html"><![CDATA[<p>参考：<a href="http://mysqlserverteam.com/the-innodb-change-buffer" target="_blank" rel="external">原文</a></p>
+<h3 id="什么是-Change-Buffer？"><a href="#什么是-Change-Buffer？" class="headerlink" title="什么是 Change Buffer？"></a>什么是 Change Buffer？</h3><p>众所周知，MySQL InnoDB 引擎的表、索引都是B+树结构，表数据是按主键顺序组织的聚簇索引。每当有 insert、update、delete 语句来修改表数据的时候，InnoDB 不仅需要在聚簇索引上修改数据，同时还需要修改辅助索引中的数据来保持数据的一致性。对于 insert、update 和 delete 语句，如果表加了自增主键，insert 操作基本是顺序写的，而其它操作则基本是随机写，对二级索引的更新大部分情况下也是随机写的，这在负载比较大的情况下对 MySQL 的性能影响比较明显。</p>
+<h3 id="Change-Buffer-用来做什么？"><a href="#Change-Buffer-用来做什么？" class="headerlink" title="Change Buffer 用来做什么？"></a>Change Buffer 用来做什么？</h3><p>为了解决以上问题带来的影响，MySQL 设计里面多了个 Change Buffer（5.6 之前叫 Insert Buffer，只 buffer insert 语句的修改），可以 buffer insert、update、delete 语句对非唯一二级索引（后面以 NUSI 简称）的修改，实际就是缓存的对二级索引修改后的记录。 change buffer 不检验键的唯一性。 Change Buffer 缓存三种类型的操作： insert， delete marking， 和 delete。</p>
+<h3 id="Change-Buffer-在哪里？"><a href="#Change-Buffer-在哪里？" class="headerlink" title="Change Buffer 在哪里？"></a>Change Buffer 在哪里？</h3><p>Change Buffer 是一颗全局唯一的 B+ 树，主键按照（space_id,page_no,count）组织，实例启动后 Change Buffer 全部加载到 buffer pool 中，有个参数可以调节 Change Buffer 的大小：<code>innodb_change_buffer_max_size</code>。当实例 stop 后，Change Buffer 就被持久化到 ibdata1（space id 为 0 的表空间）中。 ibdata1 中第四个 page 就是 Change Buffer Tree 的 root page (<code>FSP_IBUF_TREE_ROOT_PAGE_NO</code>)。 实例启动时，会调用 <code>ibuf_init_at_db_start()</code> 函数来初始化。</p>
+<h3 id="Change-Buffer-怎么工作的？"><a href="#Change-Buffer-怎么工作的？" class="headerlink" title="Change Buffer 怎么工作的？"></a>Change Buffer 怎么工作的？</h3><p>需要注意的是，change buffering 是基于非根叶子节点的，如果被修改的 NUSI 的非根叶子节点恰好不在内存中，那么就会被 buffer 到 change buffer 中。 为了防止合并时产生页分裂或者合并，有必要追踪那些非根叶节点空闲空间。 当一个 NUSI 记录被缓存到 change buffer 时，会在记录头添加四个特殊的字段。 记录格式如下（MySQL 5.5+）。 Change Buffer 的行格式通常是 REDUNDANT</p>
+<table>
+<thead>
+<tr>
+<th>字段编号</th>
+<th>宏名称</th>
+<th>字段长度</th>
+<th>字段描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>IBUF_REC_FIELD_SPACE</td>
+<td>4B</td>
+<td>页所在的 space id</td>
+</tr>
+<tr>
+<td>2</td>
+<td>IBUF_REC_FIELD_MARKER</td>
+<td>1B</td>
+<td>change buffer 的行格式</td>
+</tr>
+<tr>
+<td>3</td>
+<td>IBUF_REC_FIELD_PAGE</td>
+<td>4B</td>
+<td>被缓存的索引行所在的 page 号</td>
+</tr>
+<tr>
+<td>4</td>
+<td>IBUF_REC_FIELD_METADATA</td>
+<td>2B</td>
+<td>该字段的前两字节就是前面的 count 字段，当 space id 和 page no 都相同时，用来标示修改操作的先后顺序，同时用来排序</td>
+</tr>
+<tr>
+<td>5</td>
+<td>IBUF_REC_FIELD_USER</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="Change-Buffer-Bitmap-Page"><a href="#Change-Buffer-Bitmap-Page" class="headerlink" title="Change Buffer Bitmap Page"></a>Change Buffer Bitmap Page</h5><p>每个 page 的空闲空间信息都被保存在 Bitmap Page 中（ibdata1 中每隔 256M 的第二个页就是）。 该 Bitmap Page 可以帮助快速解决以下问题：</p>
+<ul>
+<li>当准备从磁盘上读入某个页时，会事先从该位图页中判断该页是否被修改过，如果被修改过则进行合并后再放入 buffer pool。</li>
+<li>当修改某个 NUSI 的非根页时，如果该非根页不在内存中，通过位图页可以知道该非根页是否有足够的空间来存放对该页的修改，从而知道是否需要 buffer</li>
+</ul>
+<h5 id="Change-Buffer-Bitmap-Page-中的信息"><a href="#Change-Buffer-Bitmap-Page-中的信息" class="headerlink" title="Change Buffer Bitmap Page 中的信息"></a>Change Buffer Bitmap Page 中的信息</h5><p>该位图页利用 4 bits 来描述一个页的信息，很多的 4 bits 元素组成了一个列表，这个列表就是 ibuf bitmap（insert/change buffer bitmap），起始地址位于 Bitmap Page 的 FIL_HEADER 结束的下一个字节。 如果 page size 为 16K， 那么这个 bitmap page 可以表示 16384 个页。 第一个 page 既是 <code>FSP_IBUF_BITMAP_OFFSET</code> 。 如下为每个 4 bits 元素的结构</p>
+<table>
+<thead>
+<tr>
+<th>宏名称</th>
+<th>字段长度</th>
+<th>字段描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IBUF_BITMAP_FREE</td>
+<td>2b</td>
+<td>代表空闲空间的大小: 0（0 bytes）,1 (512 bytes), 2(1024 bytes), 3(2048 bytes)。（page size 大小为 16K 的前提下）</td>
+</tr>
+<tr>
+<td>IBUF_BITMAP_BUFFERED</td>
+<td>1b</td>
+<td>某个 leaf page 是否在 change buffer 中有记录 </td>
+</tr>
+<tr>
+<td>IBUF_BITMAP_IBUF</td>
+<td>1b</td>
+<td>该页本身是否是 change buffer 页</td>
+</tr>
+</tbody>
+</table>
+<h5 id="计算方式"><a href="#计算方式" class="headerlink" title="计算方式"></a>计算方式</h5><p>给定一个 page ，计算在 bitmap page 中的位置的方式： </p>
+<p><code>uint bitmap_page_no = FSP_IBUF_BITMAP_OFFSET + ((page_no / page_size) * page_size)</code>， 具体计算可参考函数： <code>ibuf_bitmap_page_no_calc()</code></p>
+<h5 id="如何运行？"><a href="#如何运行？" class="headerlink" title="如何运行？"></a>如何运行？</h5><p>在 insert 数据的时候首先会去 bitmap 查看涉及的修改页是存在，空间空间是否足够，如果足够就 buffer 起来； 如果不够就直接操作页面，进行分裂合并等操作。 如果 insert、 delete marking 或者 delete 操作已经被 buffer 了，那么 bitmap page 中对应位置的 4 bits 元素就需要被更新（delete marking 操作不更新），更新操作可参考函数： <code>ibuf_index_page_calc_free_bits()</code></p>
+<h3 id="什么时候合并？"><a href="#什么时候合并？" class="headerlink" title="什么时候合并？"></a>什么时候合并？</h3><ul>
+<li>当使用到索引查找，或者索引扫描时，索引页被读到内存之前会进行合并</li>
+<li>master thread 定期调用 <code>ibuf_merge_in_background()</code> 进行合并</li>
+<li>当某个 NUSI page 缓存了太多的操作</li>
+<li>当 change buffer tree 达到了分配的最大值</li>
+</ul>
+<p>merge 操作可能发生在后台，也可能发生在 DML 操作过程中，这会影响到 DML 操作的性能。 change buffer 在 merge 的过程中不会发生页的分裂和合并，也不会产生 empty page。 一旦发生 merge 操作，相应的 bitmap 也会进行更新。</p>
+]]></content>
+    </entry>
+    
+  
+  
+</search>
